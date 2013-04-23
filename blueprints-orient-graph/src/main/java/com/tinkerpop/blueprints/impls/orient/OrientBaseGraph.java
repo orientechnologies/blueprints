@@ -616,7 +616,7 @@ public abstract class OrientBaseGraph implements IndexableGraph, MetaGraph<OData
 
     db.getMetadata()
         .getIndexManager()
-        .createIndex(cls.getName() + "." + key, OClass.INDEX_TYPE.NOTUNIQUE.name(),
+        .createIndex(getClassName(cls) + "." + key, OClass.INDEX_TYPE.NOTUNIQUE.name(),
             new OPropertyIndexDefinition(cls.getName(), key, indexType), cls.getPolymorphicClusterIds(), null);
   }
 
