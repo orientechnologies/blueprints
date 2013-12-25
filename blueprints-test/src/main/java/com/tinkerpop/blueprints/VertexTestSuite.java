@@ -218,9 +218,9 @@ public class VertexTestSuite extends TestSuite {
             graph.addEdge(null, v1, graph.addVertex(null), graphTest.convertLabel("knows"));
         }
         Iterable<Edge> edges = v1.getEdges(Direction.OUT, graphTest.convertLabel("knows"));
-        assertEquals(count(edges), 10);
-        assertEquals(count(edges), 10);
-        assertEquals(count(edges), 10);
+		assertEquals(10, count(edges));
+		assertEquals(10, count(edges));
+		assertEquals(10, count(edges));
         graph.shutdown();
     }
 

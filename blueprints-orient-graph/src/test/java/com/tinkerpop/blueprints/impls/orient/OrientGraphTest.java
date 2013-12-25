@@ -122,7 +122,7 @@ public abstract class OrientGraphTest extends GraphTest {
 
     public Graph generateGraph(final String graphDirectoryName) {
         final String dbPath = getWorkingDirectory() + "/" + graphDirectoryName;
-        this.currentGraph = new OrientGraph("local:" + dbPath);
+        this.currentGraph = new OrientGraph("plocal:" + dbPath);
 
         //OGlobalConfiguration.CACHE_LEVEL1_ENABLED.setValue(false);
         currentGraph.setWarnOnForceClosingTx(false);

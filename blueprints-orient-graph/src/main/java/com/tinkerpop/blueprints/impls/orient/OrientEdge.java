@@ -2,8 +2,8 @@ package com.tinkerpop.blueprints.impls.orient;
 
 import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.db.record.ridset.sbtree.OSBTreeRidBag;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.type.tree.OMVRBTreeRIDSet;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Element;
@@ -278,12 +278,10 @@ public class OrientEdge extends OrientElement implements Edge {
 
 	/**
 	 * Returns true if the edge is labeled with any of the passed strings.
-	 * 
-	 * @param iEdge
-	 *            Edge
+	 *
 	 * @param iLabels
 	 *            Labels as array of Strings
-	 * @return
+	 * @return true if the edge is labeled with any of the passed strings
 	 */
 	protected boolean isLabeled(final String[] iLabels) {
 		return isLabeled(getLabel(), iLabels);
@@ -291,12 +289,12 @@ public class OrientEdge extends OrientElement implements Edge {
 
 	/**
 	 * Returns true if the edge is labeled with any of the passed strings.
-	 * 
-	 * @param iEdge
-	 *            Edge
+	 *
+	 * @param iEdgeLabel
+	 *            Label of current edge
 	 * @param iLabels
 	 *            Labels as array of Strings
-	 * @return
+	 * @return true if the edge is labeled with any of the passed strings
 	 */
 	public static boolean isLabeled(final String iEdgeLabel,
 			final String[] iLabels) {
@@ -367,13 +365,11 @@ public class OrientEdge extends OrientElement implements Edge {
 
 		final String outFieldName = OrientVertex.getConnectionFieldName(
 				Direction.OUT, label, useVertexFieldsForEdgeLabels);
-		OrientVertex.removeEdges(vOutRecord, outFieldName, vInRecord, false,
-				useVertexFieldsForEdgeLabels);
+		removeLightweightConnection(vOutRecord, outFieldName, vInRecord);
 
 		final String inFieldName = OrientVertex.getConnectionFieldName(
 				Direction.IN, label, useVertexFieldsForEdgeLabels);
-		OrientVertex.removeEdges(vInRecord, inFieldName, vOutRecord, false,
-				useVertexFieldsForEdgeLabels);
+		removeLightweightConnection(vInRecord, inFieldName, vOutRecord);
 
 		// OUT-VERTEX ---> IN-VERTEX/EDGE
 		OrientVertex.createLink(vOutRecord, doc, outFieldName);
@@ -388,6 +384,29 @@ public class OrientEdge extends OrientElement implements Edge {
 		vOut = null;
 		vIn = null;
 		label = null;
+	}
+
+	/**
+	 * This method does not remove connection from opposite side.
+	 *
+	 * @param iVertex vertex that holds connection
+	 * @param iFieldName name of field that holds connection
+	 * @param iVertexToRemove target of connection
+	 */
+	private static void removeLightweightConnection(final ODocument iVertex, final String iFieldName, final OIdentifiable iVertexToRemove) {
+		if (iVertex == null || iVertexToRemove == null)
+			return;
+
+		final Object fieldValue = iVertex.field(iFieldName);
+		if (fieldValue instanceof OIdentifiable) {
+			if (fieldValue.equals(iVertexToRemove)) {
+				iVertex.removeField(iFieldName);
+			}
+		} else if (fieldValue instanceof OSBTreeRidBag) {
+			((OSBTreeRidBag) fieldValue).remove(iVertexToRemove);
+		}
+
+		iVertex.save();
 	}
 
 	protected ODocument createDocument(final String iLabel) {
@@ -436,35 +455,17 @@ public class OrientEdge extends OrientElement implements Edge {
 								iVertex.getIdentity(), iFieldName,
 								iEdge.getIdentity());
 
-		} else if (iFieldValue instanceof OMVRBTreeRIDSet) {
+		} else if (iFieldValue instanceof OSBTreeRidBag) {
 			// ALREADY A SET: JUST REMOVE THE NEW EDGE
-			if (!((OMVRBTreeRIDSet) iFieldValue).remove(iEdge))
-				OLogManager
-						.instance()
-						.warn(this,
-								"Edge not found in vertex's property %s.%s set while removing the edge %s",
-								iVertex.getIdentity(), iFieldName,
-								iEdge.getIdentity());
-
-			if (((OMVRBTreeRIDSet) iFieldValue).size() == 1)
-				iVertex.field(iFieldName, ((OMVRBTreeRIDSet) iFieldValue)
-						.iterator().next());
-			else if (((OMVRBTreeRIDSet) iFieldValue).size() == 0)
-				iVertex.removeField(iFieldName);
-
+			final OSBTreeRidBag bag = (OSBTreeRidBag) iFieldValue;
+			bag.remove(iEdge);
 		} else if (iFieldValue instanceof Collection<?>) {
 			// CONVERT COLLECTION IN TREE-SET AND REMOVE THE EDGE
-			final OMVRBTreeRIDSet out = new OMVRBTreeRIDSet(iVertex,
-					(Collection<OIdentifiable>) iFieldValue);
-			if (!out.remove(iEdge))
-				OLogManager
-						.instance()
-						.warn(this,
-								"Edge not found in vertex's property %s.%s collection while removing the edge %s",
-								iVertex.getIdentity(), iFieldName,
-								iEdge.getIdentity());
-			else
-				iVertex.field(iFieldName, out);
+			final OSBTreeRidBag out = new OSBTreeRidBag();
+			out.addAll((Collection<OIdentifiable>) iFieldValue);
+
+			out.remove(iEdge);
+			iVertex.field(iFieldName, out);
 		} else
 			throw new IllegalStateException("Wrong type found in the field '"
 					+ iFieldName + "': " + iFieldValue.getClass());

@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Iterator;
 
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.db.record.ridset.sbtree.OSBTreeRidBag;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,9 +52,9 @@ public class OrientDeleteVertexTest {
 		// the v1 out_edgeType1 property should not contain a reference to
 		// deleted node v2
 		// OK INSIDE THE TRANSACTION
-		OMVRBTreeRIDSet out_edge = g.getVertex(v1.getId()).getProperty(
+		OSBTreeRidBag out_edge = g.getVertex(v1.getId()).getProperty(
 				"out_edgeType1");
-		assertFalse(out_edge.contains(v2.getId()));
+		assertFalse(contains(out_edge, v2.getId()));
 		g.shutdown();
 
 		// the v1 node should only have one edge left
@@ -68,7 +70,14 @@ public class OrientDeleteVertexTest {
 		// deleted v2
 		// FAILS HERE OUTSIDE OF THE TRANSACTION
 		out_edge = g.getVertex(v1.getId()).getProperty("out_edgeType1");
-		assertFalse(out_edge.contains(v2.getId()));
+		assertFalse(contains(out_edge, v2.getId()));
+	}
+
+	private boolean contains(OSBTreeRidBag out_edge, Object id) {
+		for (OIdentifiable oIdentifiable : out_edge)
+			if (oIdentifiable.equals(id))
+				return true;
+		return false;
 	}
 
 	int getEdgeCount(Object vid) {
