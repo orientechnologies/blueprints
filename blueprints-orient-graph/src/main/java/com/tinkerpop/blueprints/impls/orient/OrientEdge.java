@@ -358,6 +358,7 @@ public class OrientEdge extends OrientElement implements Edge {
 		doc.field(OrientBaseGraph.CONNECTION_IN, graph
 				.isKeepInMemoryReferences() ? vInRecord.getIdentity()
 				: vInRecord);
+		doc.save();
 		rawElement = doc;
 
 		final boolean useVertexFieldsForEdgeLabels = graph
@@ -367,18 +368,16 @@ public class OrientEdge extends OrientElement implements Edge {
 				Direction.OUT, label, useVertexFieldsForEdgeLabels);
 		removeLightweightConnection(vOutRecord, outFieldName, vInRecord);
 
+		// OUT-VERTEX ---> IN-VERTEX/EDGE
+		OrientVertex.createLink(vOutRecord, doc, outFieldName);
+		vOutRecord.save();
+
 		final String inFieldName = OrientVertex.getConnectionFieldName(
 				Direction.IN, label, useVertexFieldsForEdgeLabels);
 		removeLightweightConnection(vInRecord, inFieldName, vOutRecord);
 
-		// OUT-VERTEX ---> IN-VERTEX/EDGE
-		OrientVertex.createLink(vOutRecord, doc, outFieldName);
-
 		// IN-VERTEX ---> OUT-VERTEX/EDGE
 		OrientVertex.createLink(vInRecord, doc, inFieldName);
-
-		doc.save();
-		vOutRecord.save();
 		vInRecord.save();
 
 		vOut = null;
@@ -405,8 +404,6 @@ public class OrientEdge extends OrientElement implements Edge {
 		} else if (fieldValue instanceof OSBTreeRidBag) {
 			((OSBTreeRidBag) fieldValue).remove(iVertexToRemove);
 		}
-
-		iVertex.save();
 	}
 
 	protected ODocument createDocument(final String iLabel) {
