@@ -92,7 +92,7 @@ public class OrientDeleteVertexTest {
 	}
 
 	private OrientGraph createGraph() {
-		return (OrientGraph) new OrientGraph("memory:db").setWarnOnForceClosingTx(false);
+		return (OrientGraph) new OrientGraph("plocal:target/OrientDeleteVertexTest_db").setWarnOnForceClosingTx(false);
 	}
 
 }
