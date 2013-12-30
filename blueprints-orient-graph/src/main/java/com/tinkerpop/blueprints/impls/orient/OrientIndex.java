@@ -134,7 +134,7 @@ public class OrientIndex<T extends OrientElement> implements Index<T> {
         // CREATE THE MAP
         this.underlying = new OIndexTxAwareMultiValue(graph.getRawGraph(), (OIndex<Collection<OIdentifiable>>) graph.getRawGraph()
                 .getMetadata().getIndexManager()
-                .createIndex(indexName, OClass.INDEX_TYPE.NOTUNIQUE.toString(), new OSimpleKeyIndexDefinition(iKeyType), null, null));
+                .createIndex(indexName, OClass.INDEX_TYPE.NOTUNIQUE.toString(), new OSimpleKeyIndexDefinition(iKeyType), null, null, null));
 
         final String className;
         if (Vertex.class.isAssignableFrom(indexClass))
@@ -149,7 +149,7 @@ public class OrientIndex<T extends OrientElement> implements Index<T> {
                 .getMetadata()
                 .getIndexManager()
                 .createIndex("__@recordmap@___" + indexName, OClass.INDEX_TYPE.DICTIONARY.toString(),
-                        new OSimpleKeyIndexDefinition(OType.LINK, OType.STRING), null, null));
+                        new OSimpleKeyIndexDefinition(OType.LINK, OType.STRING), null, null, null));
 
         // CREATE THE CONFIGURATION FOR THE NEW INDEX
         underlying.getConfiguration().field(CONFIG_CLASSNAME, className);

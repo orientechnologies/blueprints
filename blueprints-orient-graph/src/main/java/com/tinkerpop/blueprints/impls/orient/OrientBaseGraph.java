@@ -1047,7 +1047,7 @@ public abstract class OrientBaseGraph implements IndexableGraph,
 								indexType,
 								new OPropertyIndexDefinition(className, key,
 										keyType),
-								cls.getPolymorphicClusterIds(), null);
+								cls.getPolymorphicClusterIds(), null, null);
 				return null;
 
 			}
