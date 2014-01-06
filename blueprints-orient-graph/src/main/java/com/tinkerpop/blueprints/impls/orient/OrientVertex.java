@@ -7,19 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.orientechnologies.common.collection.OLazyIterator;
 import com.orientechnologies.common.collection.OMultiCollectionIterator;
 import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.common.util.OPair;
 import com.orientechnologies.orient.core.command.traverse.OTraverse;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.db.record.ORecordLazyMultiValue;
-import com.orientechnologies.orient.core.db.record.ridset.sbtree.OSBTreeRidBag;
+import com.orientechnologies.orient.core.db.record.ridbag.ORidBag;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.tree.OMVRBTreeRID;
-import com.orientechnologies.orient.core.type.tree.OMVRBTreeRIDSet;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Element;
@@ -130,8 +128,8 @@ public class OrientVertex extends OrientElement implements Vertex {
 							iterable.add(new OrientVertexIterator(this, coll
 									.iterator(), connection, iLabels, -1));
 					}
-				} else if (fieldValue instanceof OSBTreeRidBag) {
-					iterable.add(new OrientVertexIterator(this, ((OSBTreeRidBag) fieldValue).rawIterator(), connection, iLabels, -1));
+				} else if (fieldValue instanceof ORidBag) {
+					iterable.add(new OrientVertexIterator(this, ((ORidBag) fieldValue).rawIterator(), connection, iLabels, -1));
 				}
 		}
 
@@ -372,8 +370,8 @@ public class OrientVertex extends OrientElement implements Vertex {
 						counter += ((Collection<?>) fieldValue).size();
 					else if (fieldValue instanceof Map<?, ?>)
 						counter += ((Map<?, ?>) fieldValue).size();
-					else if (fieldValue instanceof OSBTreeRidBag) {
-						counter += ((OSBTreeRidBag) fieldValue).size();
+					else if (fieldValue instanceof ORidBag) {
+						counter += ((ORidBag) fieldValue).size();
 					} else {
 						counter++;
 					}
@@ -451,8 +449,8 @@ public class OrientVertex extends OrientElement implements Vertex {
 									iDestination, coll.iterator(), connection,
 									iLabels, -1));
 					}
-				} else if (fieldValue instanceof OSBTreeRidBag) {
-					OSBTreeRidBag bag = (OSBTreeRidBag) fieldValue;
+				} else if (fieldValue instanceof ORidBag) {
+					ORidBag bag = (ORidBag) fieldValue;
 
 					iterable.add(new OrientEdgeIterator(this, iDestination, bag.rawIterator(), connection, iLabels, -1));
 				}
@@ -585,17 +583,17 @@ public class OrientVertex extends OrientElement implements Vertex {
 			out = iTo;
 		else if (found instanceof OIdentifiable) {
 			// DOUBLE: SCALE UP THE LINK INTO A COLLECTION
-			final OSBTreeRidBag bag = new OSBTreeRidBag();
+			final ORidBag bag = new ORidBag();
 			bag.add((OIdentifiable) found);
 			bag.add(iTo);
 			out = bag;
-		} else if (found instanceof OSBTreeRidBag) {
+		} else if (found instanceof ORidBag) {
 			// ADD THE LINK TO THE COLLECTION
 			out = null;
-			((OSBTreeRidBag) found).add(iTo);
+			((ORidBag) found).add(iTo);
 		} else if (found instanceof Collection<?>) {
 			// CONVERT IT TO BAG
-			final OSBTreeRidBag bag = new OSBTreeRidBag();
+			final ORidBag bag = new ORidBag();
 			bag.addAll((Collection<OIdentifiable>) found);
 			bag.add(iTo);
 			out = bag;
@@ -725,9 +723,9 @@ public class OrientVertex extends OrientElement implements Vertex {
 
 				deleteEdgeIfAny((OIdentifiable) fieldValue);
 
-			} else if (fieldValue instanceof OSBTreeRidBag) {
+			} else if (fieldValue instanceof ORidBag) {
 				// COLLECTION OF RECORDS: REMOVE THE ENTRY
-				final OSBTreeRidBag bag = (OSBTreeRidBag) fieldValue;
+				final ORidBag bag = (ORidBag) fieldValue;
 
 				if (iVertexToRemove != null) {
 					// SEARCH SEQUENTIALLY (SLOWER)

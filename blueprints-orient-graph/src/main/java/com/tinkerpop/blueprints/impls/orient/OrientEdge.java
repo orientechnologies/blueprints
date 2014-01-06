@@ -2,7 +2,7 @@ package com.tinkerpop.blueprints.impls.orient;
 
 import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.db.record.ridset.sbtree.OSBTreeRidBag;
+import com.orientechnologies.orient.core.db.record.ridbag.ORidBag;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
@@ -401,8 +401,8 @@ public class OrientEdge extends OrientElement implements Edge {
 			if (fieldValue.equals(iVertexToRemove)) {
 				iVertex.removeField(iFieldName);
 			}
-		} else if (fieldValue instanceof OSBTreeRidBag) {
-			((OSBTreeRidBag) fieldValue).remove(iVertexToRemove);
+		} else if (fieldValue instanceof ORidBag) {
+			((ORidBag) fieldValue).remove(iVertexToRemove);
 		}
 	}
 
@@ -452,13 +452,13 @@ public class OrientEdge extends OrientElement implements Edge {
 								iVertex.getIdentity(), iFieldName,
 								iEdge.getIdentity());
 
-		} else if (iFieldValue instanceof OSBTreeRidBag) {
+		} else if (iFieldValue instanceof ORidBag) {
 			// ALREADY A SET: JUST REMOVE THE NEW EDGE
-			final OSBTreeRidBag bag = (OSBTreeRidBag) iFieldValue;
+			final ORidBag bag = (ORidBag) iFieldValue;
 			bag.remove(iEdge);
 		} else if (iFieldValue instanceof Collection<?>) {
 			// CONVERT COLLECTION IN TREE-SET AND REMOVE THE EDGE
-			final OSBTreeRidBag out = new OSBTreeRidBag();
+			final ORidBag out = new ORidBag();
 			out.addAll((Collection<OIdentifiable>) iFieldValue);
 
 			out.remove(iEdge);
