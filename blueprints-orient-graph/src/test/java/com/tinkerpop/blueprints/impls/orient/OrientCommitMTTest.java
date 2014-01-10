@@ -55,6 +55,7 @@ public class OrientCommitMTTest {
     }
 
     @Test
+	@Ignore
     public void testWithTransactionEmbeddedRidBag() {
         OGlobalConfiguration.RID_BAG_EMBEDDED_TO_SBTREEBONSAI_THRESHOLD.setValue(Integer.MAX_VALUE);
         OGlobalConfiguration.RID_BAG_SBTREEBONSAI_TO_EMBEDDED_THRESHOLD.setValue(Integer.MAX_VALUE);
@@ -67,6 +68,7 @@ public class OrientCommitMTTest {
     }
 
     @Test
+	@Ignore
     public void testSingleThreadWithTransactionEmbeddedRidBag() {
         OGlobalConfiguration.RID_BAG_EMBEDDED_TO_SBTREEBONSAI_THRESHOLD.setValue(Integer.MAX_VALUE);
         OGlobalConfiguration.RID_BAG_SBTREEBONSAI_TO_EMBEDDED_THRESHOLD.setValue(Integer.MAX_VALUE);
@@ -79,6 +81,7 @@ public class OrientCommitMTTest {
     }
 
     @Test
+	@Ignore
     public void testWithTransactionSBTreeRidBag() {
         OGlobalConfiguration.RID_BAG_EMBEDDED_TO_SBTREEBONSAI_THRESHOLD.setValue(-1);
         OGlobalConfiguration.RID_BAG_SBTREEBONSAI_TO_EMBEDDED_THRESHOLD.setValue(-1);
@@ -91,6 +94,7 @@ public class OrientCommitMTTest {
     }
 
     @Test
+	@Ignore
     public void testSingleThreadWithTransactionSBTreeRidBag() {
         OGlobalConfiguration.RID_BAG_EMBEDDED_TO_SBTREEBONSAI_THRESHOLD.setValue(-1);
         OGlobalConfiguration.RID_BAG_SBTREEBONSAI_TO_EMBEDDED_THRESHOLD.setValue(-1);
