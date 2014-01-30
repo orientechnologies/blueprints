@@ -25,16 +25,34 @@ public class OrientGraph extends OrientTransactionalGraph {
 		config();
 	}
 
+	public OrientGraph(final ODatabaseDocumentTx iDatabase, final boolean iAutoStartTx) {
+		super(iDatabase, iAutoStartTx);
+		config();
+	}
+
 	public OrientGraph(final String url) {
 		super(url, ADMIN, ADMIN);
 		config();
 	}
+
+	public OrientGraph(final String url, final boolean iAutoStartTx) {
+		super(url, ADMIN, ADMIN, iAutoStartTx);
+		config();
+	}
+
 
 	public OrientGraph(final String url, final String username,
 			final String password) {
 		super(url, username, password);
 		config();
 	}
+
+	public OrientGraph(final String url, final String username,
+					   final String password, final boolean iAutoStartTx) {
+		super(url, username, password, iAutoStartTx);
+		config();
+	}
+
 
 	/**
 	 * Builds a OrientGraph instance passing a configuration. Supported
