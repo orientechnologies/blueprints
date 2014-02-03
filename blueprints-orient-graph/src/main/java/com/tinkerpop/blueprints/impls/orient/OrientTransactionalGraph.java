@@ -24,21 +24,37 @@ public abstract class OrientTransactionalGraph extends OrientBaseGraph
 	 *            Underlying OGraphDatabase object to attach
 	 */
 	public OrientTransactionalGraph(final ODatabaseDocumentTx iDatabase) {
+		this(iDatabase, true);
+	}
+
+	public OrientTransactionalGraph(final ODatabaseDocumentTx iDatabase, final boolean iAutoStartTx) {
 		super(iDatabase);
+		this.setAutoStartTx(iAutoStartTx);
 		autoStartTransaction();
 	}
 
 	public OrientTransactionalGraph(final String url) {
+		this(url, true);
+	}
+
+	public OrientTransactionalGraph(final String url, final boolean iAutoStartTx) {
 		super(url, ADMIN, ADMIN);
+		this.setAutoStartTx(iAutoStartTx);
 		autoStartTransaction();
 	}
 
 	public OrientTransactionalGraph(final String url, final String username,
 			final String password) {
+		this(url, username, password, true);
+	}
+
+	public OrientTransactionalGraph(final String url, final String username,
+									final String password, final boolean iAutoStartTx) {
 		super(url, username, password);
+		this.setAutoStartTx(iAutoStartTx);
 		autoStartTransaction();
-	}	
-	
+	}
+
 	public OrientTransactionalGraph( final Configuration configuration ){
 		super( configuration );
 
